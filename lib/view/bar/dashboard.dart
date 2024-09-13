@@ -1,3 +1,5 @@
+import 'package:belajar_flutter_perpus/view/auth/home_page.dart';
+import 'package:belajar_flutter_perpus/view/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:belajar_flutter_perpus/view/book/book.dart';
@@ -33,7 +35,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    // Simpan token di SharedPreferences jika belum ada
     _saveToken(widget.token);
   }
 
@@ -63,6 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pagesAdmin = [
+      TampilanHomePage(),
       BookPage(),
       CategoriesPage(),
       MemberListPage(),
@@ -82,12 +84,14 @@ class _DashboardPageState extends State<DashboardPage> {
     ];
 
     final List<Widget> pagesMember = [
+      TampilanHomePage(),
       BookMemberPage(namaMember: widget.namaMember, memberId: widget.memberId),
       PeminjamanMemberPage(token: widget.token, memberId: widget.memberId),
       PengembalianMemberPage(token: widget.token, memberId: widget.memberId),
     ];
 
     final List<String> titlesMember = [
+      'Dashboard',
       'Daftar Buku',
       'Peminjaman',
       'Pengembalian',
@@ -116,16 +120,35 @@ class _DashboardPageState extends State<DashboardPage> {
               return [
                 PopupMenuItem<String>(
                   value: 'email',
-                  child: Text('Email: ${widget.user['email']}'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.email, color: Colors.orange, size: 20),
+                      SizedBox(width: 8),
+                      Text('Email: ${widget.user['email']}'),
+                    ],
+                  ),
                 ),
                 PopupMenuItem<String>(
                   value: 'roles',
-                  child: Text(
-                      'Roles: ${widget.user['roles'].map((role) => role['name']).join(', ')}'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.group, color: Colors.orange, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                          'Roles: ${widget.user['roles'].map((role) => role['name']).join(', ')}'),
+                    ],
+                  ),
                 ),
+                PopupMenuDivider(), // Divider untuk pemisah
                 PopupMenuItem<String>(
                   value: 'logout',
-                  child: Text('Logout'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Text('Logout'),
+                    ],
+                  ),
                 ),
               ];
             },
@@ -137,129 +160,147 @@ class _DashboardPageState extends State<DashboardPage> {
         children: isAdmin ? pagesAdmin : pagesMember,
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.orangeAccent,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  Text(
-                    '${widget.user['name']}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.orangeAccent,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${widget.user['name']}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '${widget.user['email']}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          'Roles: ${widget.user['roles'].map((role) => role['name']).join(', ')}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    '${widget.user['email']}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
+                  if (isAdmin) ...[
+                    ListTile(
+                      leading: Icon(Icons.home, color: Colors.orange),
+                      title: Text('Dashboard'),
+                      onTap: () {
+                        _onDrawerItemTapped(0);
+                      },
                     ),
-                  ),
-                  Text(
-                    'Roles: ${widget.user['roles'].map((role) => role['name']).join(', ')}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
+                    SizedBox(height: 5),
+                    _buildDrawerSection('Buku', [
+                      ListTile(
+                        leading: Icon(Icons.book, color: Colors.orange),
+                        title: Text('Daftar Buku'),
+                        onTap: () {
+                          _onDrawerItemTapped(1);
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.category, color: Colors.orange),
+                        title: Text('Kategori Buku'),
+                        onTap: () {
+                          _onDrawerItemTapped(2);
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.people, color: Colors.orange),
+                        title: Text('User'),
+                        onTap: () {
+                          _onDrawerItemTapped(3);
+                        },
+                      ),
+                    ]),
+                    SizedBox(height: 5),
+                    _buildDrawerSection('Transaksi', [
+                      ListTile(
+                        leading:
+                            Icon(Icons.library_books, color: Colors.orange),
+                        title: Text('Peminjaman'),
+                        onTap: () {
+                          _onDrawerItemTapped(4);
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.approval, color: Colors.orange),
+                        title: Text('Persetujuan'),
+                        onTap: () {
+                          _onDrawerItemTapped(5);
+                        },
+                      ),
+                      ListTile(
+                        leading:
+                            Icon(Icons.assignment_return, color: Colors.orange),
+                        title: Text('Pengembalian'),
+                        onTap: () {
+                          _onDrawerItemTapped(6);
+                        },
+                      ),
+                    ]),
+                  ],
+                  if (isMember) ...[
+                    ListTile(
+                      leading: Icon(Icons.home, color: Colors.orange),
+                      title: Text('Dashboard'),
+                      onTap: () {
+                        _onDrawerItemTapped(0);
+                      },
                     ),
-                  ),
+                    ListTile(
+                      leading: Icon(Icons.book, color: Colors.orange),
+                      title: Text('Daftar Buku'),
+                      onTap: () {
+                        _onDrawerItemTapped(1);
+                      },
+                    ),
+                    SizedBox(height: 5),
+                    _buildDrawerSection('Transaksi', [
+                      ListTile(
+                        leading:
+                            Icon(Icons.library_books, color: Colors.orange),
+                        title: Text('Peminjaman'),
+                        onTap: () {
+                          _onDrawerItemTapped(2);
+                        },
+                      ),
+                      ListTile(
+                        leading:
+                            Icon(Icons.assignment_return, color: Colors.orange),
+                        title: Text('Pengembalian'),
+                        onTap: () {
+                          _onDrawerItemTapped(3);
+                        },
+                      ),
+                    ]),
+                  ],
+                  SizedBox(height: 10),
                 ],
               ),
             ),
-            if (isAdmin) ...[
-              ListTile(
-                leading: Icon(Icons.home, color: Colors.orange),
-                title: Text('Dashboard'),
-                onTap: () {
-                  _onDrawerItemTapped(0);
-                },
-              ),
-              SizedBox(height: 5),
-              _buildDrawerSection('Buku', [
-                ListTile(
-                  leading: Icon(Icons.book, color: Colors.orange),
-                  title: Text('Daftar Buku'),
-                  onTap: () {
-                    _onDrawerItemTapped(0);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.category, color: Colors.orange),
-                  title: Text('Kategori Buku'),
-                  onTap: () {
-                    _onDrawerItemTapped(1);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.people, color: Colors.orange),
-                  title: Text('User'),
-                  onTap: () {
-                    _onDrawerItemTapped(2);
-                  },
-                ),
-              ]),
-              SizedBox(height: 5),
-              _buildDrawerSection('Transaksi', [
-                ListTile(
-                  leading: Icon(Icons.library_books, color: Colors.orange),
-                  title: Text('Peminjaman'),
-                  onTap: () {
-                    _onDrawerItemTapped(3);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.approval, color: Colors.orange),
-                  title: Text('Persetujuan'),
-                  onTap: () {
-                    _onDrawerItemTapped(4);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.assignment_return, color: Colors.orange),
-                  title: Text('Pengembalian'),
-                  onTap: () {
-                    _onDrawerItemTapped(5);
-                  },
-                ),
-              ]),
-            ],
-            if (isMember) ...[
-              ListTile(
-                leading: Icon(Icons.book, color: Colors.orange),
-                title: Text('Daftar Buku'),
-                onTap: () {
-                  _onDrawerItemTapped(0);
-                },
-              ),
-              SizedBox(height: 5),
-              _buildDrawerSection('Transaksi', [
-                ListTile(
-                  leading: Icon(Icons.library_books, color: Colors.orange),
-                  title: Text('Peminjaman'),
-                  onTap: () {
-                    _onDrawerItemTapped(1);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.assignment_return, color: Colors.orange),
-                  title: Text('Pengembalian'),
-                  onTap: () {
-                    _onDrawerItemTapped(2);
-                  },
-                ),
-              ]),
-            ],
-            SizedBox(height: 10),
+            Divider(height: 1, thickness: 0.2, color: Colors.grey[350]),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.orange),
+              leading: Icon(Icons.logout, color: Colors.red),
               title: Text('Logout'),
               onTap: () {
                 _logout(context);
@@ -290,8 +331,8 @@ class _DashboardPageState extends State<DashboardPage> {
           width: double.infinity,
           child: Divider(
             color: Colors.grey[350],
-            height: 1,
-            thickness: 2,
+            height: 0.5,
+            thickness: 0.5,
           ),
         ),
         ...items,

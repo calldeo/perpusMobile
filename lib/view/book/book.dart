@@ -272,20 +272,20 @@ class _BookPageState extends State<BookPage> {
       );
 
       log('Response status: ${response.statusCode}');
-      log('Response data length: ${response.data.toString()} bytes');
+      log('Response data length: ${response.data.length} bytes');
 
       if (response.statusCode == 200) {
-        // Dapatkan direktori penyimpanan aplikasi
-        final directory = await getApplicationDocumentsDirectory();
+        // Dapatkan direktori penyimpanan eksternal
+        final directory = await getExternalStorageDirectory();
         if (directory == null) {
-          log('Failed to get application documents directory.');
+          log('Failed to get external storage directory.');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to access application storage.')),
+            SnackBar(content: Text('Failed to access external storage.')),
           );
           return;
         }
 
-        // Simpan file PDF
+        // Simpan file PDF di direktori yang sama dengan Excel
         final filePath = '${directory.path}/buku_export.pdf';
         final file = File(filePath);
         await file.writeAsBytes(response.data);
@@ -339,23 +339,55 @@ class _BookPageState extends State<BookPage> {
           'file': await MultipartFile.fromFile(file.path),
         });
 
-        await Dio().post(
-          '$baseUrl/book/import/excel',
+        final response = await Dio().post(
+          'http://perpus-api.mamorasoft.com/api/book/import/excel',
           data: formData,
           options: Options(
             headers: {
               'Authorization': 'Bearer $token',
             },
+            validateStatus: (status) {
+              return status! < 500; // Tangani semua status di bawah 500
+            },
           ),
         );
 
-        log('Books imported successfully.');
-        _refreshBooks();
+        // Cek apakah status respons adalah 200 (sukses)
+        if (response.statusCode == 200) {
+          log('Books imported successfully: ${response.data}');
+
+          // Tampilkan Snackbar untuk notifikasi sukses
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Books imported successfully!')));
+
+          // Tampilkan buku yang diimpor jika ada dalam data respons
+          final importedBooks = response.data;
+          log('Imported Books: $importedBooks');
+
+          // Refresh data buku setelah impor sukses
+          _refreshBooks();
+        } else {
+          // Jika status kode bukan 200, tampilkan pesan error
+          log('Failed to import books. Status code: ${response.statusCode}');
+
+          // Tampilkan Snackbar untuk notifikasi gagal
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                  'Failed to import books. Status: ${response.statusCode}')));
+        }
       } else {
         log('No file selected.');
+
+        // Tampilkan Snackbar jika tidak ada file yang dipilih
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('No file selected.')));
       }
     } catch (e) {
       log('Error importing books: $e');
+
+      // Tampilkan Snackbar untuk notifikasi error
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error importing books: $e')));
     }
   }
 

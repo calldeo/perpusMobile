@@ -125,7 +125,7 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   child: Card(
                     elevation: 5,
                     margin: const EdgeInsets.all(16.0),
@@ -219,7 +219,7 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
                             alignment: Alignment.centerRight,
                             child: ElevatedButton(
                               onPressed: _approvePersetujuan,
-                              child: Text('Aprove'),
+                              child: Text('Approve'),
                               style: ElevatedButton.styleFrom(
                                 primary: Colors.deepOrangeAccent,
                                 shape: RoundedRectangleBorder(

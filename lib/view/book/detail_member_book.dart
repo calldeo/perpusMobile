@@ -170,75 +170,135 @@ class _DetailMemberBookPageState extends State<DetailMemberBookPage> {
                                   ),
                                 )
                               : const SizedBox(height: 150),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Judul: ${_judulController.text}',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${_judulController.text} ${int.parse(_stokController.text) > 1 ? '' : 'tersisa'}',
+                                  style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 178, 255, 155)
+                                      .withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  int.parse(_stokController.text) > 1
+                                      ? 'Tersedia'
+                                      : 'Tersisa',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 12),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                          ),
                           Text(
-                            'Pengarang: ${_pengarangController.text}',
+                            '${_pengarangController.text}',
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 14, fontWeight: FontWeight.w400),
                           ),
                           const SizedBox(height: 12),
                           Text(
                             'Penerbit: ${_penerbitController.text}',
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 14, fontWeight: FontWeight.w400),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 4),
                           Text(
                             'Tahun Terbit: ${_tahunController.text}',
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 14, fontWeight: FontWeight.w400),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 4),
                           Text(
                             'Kategori: ${_selectedCategory?.namaKategori ?? 'Tidak ada'}',
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Stok: ${_stokController.text}',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 14, fontWeight: FontWeight.w400),
                           ),
                           const SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => FormPeminjamanMember(
-                                      bukuId: widget.bookId.toString(),
-                                      namaMember: widget.namaMember,
-                                      memberId: int.parse(widget.memberId
-                                          .toString()), // Mengonversi dari String ke int
-                                    ),
-                                  ),
-                                ).then((_) {
-                                  if (widget.onRefresh != null) {
-                                    widget.onRefresh!();
-                                  }
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.green,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Stok: ${_stokController.text}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              child: const Text('Pinjam Buku',
-                                  style: TextStyle(fontSize: 14)),
+                            ],
+                          ),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.redAccent,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                  ),
+                                  child: const Text('Cancel',
+                                      style: TextStyle(fontSize: 14)),
+                                ),
+                                const SizedBox(width: 5),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            FormPeminjamanMember(
+                                          bukuId: widget.bookId.toString(),
+                                          namaMember: widget.namaMember,
+                                          memberId: int.parse(widget.memberId
+                                              .toString()), // Mengonversi dari String ke int
+                                        ),
+                                      ),
+                                    ).then((_) {
+                                      if (widget.onRefresh != null) {
+                                        widget.onRefresh!();
+                                      }
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.green,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                  ),
+                                  child: const Text('Pinjam',
+                                      style: TextStyle(fontSize: 14)),
+                                ),
+                              ],
                             ),
                           ),
                         ],

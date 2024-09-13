@@ -266,29 +266,90 @@ class _AddBookPageState extends State<AddBookPage> {
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 8.0), // Jarak antara teks dan dropdown
-          DropdownButtonFormField<CategoryModel>(
-            value: _selectedCategory,
-            onChanged: (CategoryModel? newValue) {
-              setState(() {
-                _selectedCategory = newValue;
-              });
-            },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(8.0), // Ukuran radius dikurangi
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Colors.grey[200],
-            ),
-            items: _categories.map((CategoryModel category) {
-              return DropdownMenuItem<CategoryModel>(
-                value: category,
-                child: Text(category.namaKategori),
+          SizedBox(height: 8.0), // Jarak antara teks dan tombol
+          InkWell(
+            onTap: () {
+              // Tampilkan modal dari bawah
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    padding: EdgeInsets.all(16.0),
+                    height: 300, // Sesuaikan tinggi modal
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pilih Kategori',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _categories.length,
+                            itemBuilder: (context, index) {
+                              final category = _categories[index];
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(category.namaKategori),
+                                    trailing: Radio<CategoryModel>(
+                                      value: category,
+                                      groupValue: _selectedCategory,
+                                      onChanged: (CategoryModel? value) {
+                                        // Saat kategori dipilih, perbarui nilai dan tutup modal
+                                        setState(() {
+                                          _selectedCategory = value;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                      activeColor: Colors
+                                          .orange, // Warna oranye untuk radio button
+                                    ),
+                                    onTap: () {
+                                      // Saat list tile ditekan, update kategori yang dipilih
+                                      setState(() {
+                                        _selectedCategory = category;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  Divider(), // Divider di bawah setiap kategori
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               );
-            }).toList(),
+            },
+            child: InputDecorator(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Ukuran radius dikurangi
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
+              // Tampilkan kategori terpilih atau placeholder jika belum ada yang dipilih
+              child: Text(
+                _selectedCategory?.namaKategori ?? 'Pilih Kategori',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: _selectedCategory != null
+                      ? Colors.black87
+                      : Colors.black54, // Ubah warna jika belum dipilih
+                ),
+              ),
+            ),
           ),
         ],
       ),

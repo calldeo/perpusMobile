@@ -360,20 +360,18 @@ class _DetailBookPageState extends State<DetailBookPage> {
                             ),
                             SizedBox(height: 8.0),
                             _buildDropdownField(
-                              label: 'Category',
-                              value: _selectedCategory,
-                              items: _categories.map((category) {
-                                return DropdownMenuItem<CategoryModel>(
-                                  value: category,
-                                  child: Text(category.namaKategori),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
+                              label: 'Category', // Label untuk dropdown
+                              value:
+                                  _selectedCategory, // Nilai kategori yang dipilih
+                              items:
+                                  _categories, // Daftar kategori yang akan ditampilkan
+                              onChanged: (CategoryModel? newValue) {
                                 setState(() {
-                                  _selectedCategory = value;
+                                  _selectedCategory = newValue;
                                 });
                               },
-                              icon: Icons.category,
+                              icon: Icons
+                                  .category, // Ikon yang ditampilkan di sebelah kanan
                             ),
                             SizedBox(height: 8.0),
                             _buildTextField(
@@ -525,7 +523,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
   Widget _buildDropdownField({
     required String label,
     required CategoryModel? value,
-    required List<DropdownMenuItem<CategoryModel>> items,
+    required List<CategoryModel> items,
     required void Function(CategoryModel?) onChanged,
     required IconData icon,
   }) {
@@ -542,28 +540,91 @@ class _DetailBookPageState extends State<DetailBookPage> {
             ),
           ),
           SizedBox(height: 4.0),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: DropdownButtonFormField<CategoryModel>(
-              value: value,
-              items: items,
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.0,
-                    vertical: 16.0), // Sesuaikan padding vertikal
-                suffixIcon: Icon(icon), // Pindahkan ikon ke kanan
-                border: InputBorder.none,
+          InkWell(
+            onTap: () {
+              // Tampilkan modal dari bawah
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    padding: EdgeInsets.all(16.0),
+                    height: 300, // Sesuaikan tinggi modal
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pilih Kategori',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final category = items[index];
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(category.namaKategori),
+                                    trailing: Radio<CategoryModel>(
+                                      value: category,
+                                      groupValue: value,
+                                      onChanged: (CategoryModel? newValue) {
+                                        // Update nilai yang dipilih dan tutup modal
+                                        onChanged(newValue);
+                                        Navigator.pop(context);
+                                      },
+                                      activeColor:
+                                          Colors.orange, // Warna radio button
+                                    ),
+                                    onTap: () {
+                                      // Jika list item diklik, update nilai terpilih
+                                      onChanged(category);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  Divider(), // Divider di bawah setiap kategori
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              validator: (value) {
-                if (value == null) {
-                  return 'Please select a category';
-                }
-                return null;
-              },
+              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Tampilkan nama kategori terpilih atau placeholder
+                  Text(
+                    value?.namaKategori ?? 'Pilih Kategori',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: value != null ? Colors.black87 : Colors.black54,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(icon, color: Colors.black54), // Ikon kategori
+                      SizedBox(width: 8.0), // Jarak antara ikon dan panah
+                      Icon(Icons.arrow_drop_down,
+                          color: Colors.black54), // Ikon panah dropdown
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],

@@ -101,7 +101,7 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  width: 400,
+                  width: double.infinity,
                   child: Card(
                     elevation: 5,
                     margin: const EdgeInsets.all(16.0),
