@@ -71,7 +71,7 @@ class DetailMemberPage extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent),
+                            backgroundColor: Colors.orangeAccent),
                         child: Text('Back'),
                       ),
                     ),

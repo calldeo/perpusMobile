@@ -159,9 +159,8 @@ class _PeminjamanPageState extends State<PeminjamanPage> {
                           },
                           child: Text('Tambah'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors
-                                .orangeAccent, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            backgroundColor: Colors.orangeAccent, // Warna latar belakang tombol
+                            foregroundColor: Colors.white, // Warna teks tombol
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10), // Padding tombol
                             shape: RoundedRectangleBorder(

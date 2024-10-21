@@ -257,7 +257,7 @@ class _DetailMemberBookPageState extends State<DetailMemberBookPage> {
                                     Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.redAccent,
+                                    backgroundColor: Colors.redAccent,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 15, vertical: 10),
                                     shape: RoundedRectangleBorder(
@@ -288,7 +288,7 @@ class _DetailMemberBookPageState extends State<DetailMemberBookPage> {
                                     });
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.green,
+                                    backgroundColor: Colors.green,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 15, vertical: 10),
                                     shape: RoundedRectangleBorder(

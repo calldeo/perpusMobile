@@ -289,8 +289,7 @@ class _ListMemberBookPageState extends State<ListMemberBookPage> {
                         ElevatedButton(
                           onPressed: _currentPage > 1 ? _previousPage : null,
                           style: ElevatedButton.styleFrom(
-                            primary:
-                                Colors.orangeAccent, // Mengatur warna tombol
+                            backgroundColor: Colors.orangeAccent, // Mengatur warna tombol
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   12.0), // Menambahkan radius
@@ -303,8 +302,7 @@ class _ListMemberBookPageState extends State<ListMemberBookPage> {
                           onPressed:
                               _currentPage < _totalPages ? _nextPage : null,
                           style: ElevatedButton.styleFrom(
-                            primary:
-                                Colors.orangeAccent, // Mengatur warna tombol
+                            backgroundColor: Colors.orangeAccent, // Mengatur warna tombol
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   12.0), // Menambahkan radius

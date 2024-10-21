@@ -426,7 +426,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
                                     onPressed: _selectImage,
                                     child: Text('Select Image'),
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.orangeAccent,
+                                      backgroundColor: Colors.orangeAccent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(8.0),
@@ -444,7 +444,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
                                   },
                                   child: Text('Cancel'),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.redAccent,
+                                    backgroundColor: Colors.redAccent,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
@@ -455,7 +455,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
                                   onPressed: _updateBook,
                                   child: Text('Simpan'),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.orangeAccent,
+                                    backgroundColor: Colors.orangeAccent,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),

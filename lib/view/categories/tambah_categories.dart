@@ -141,8 +141,8 @@ class _TambahCategoriesPageState extends State<TambahCategoriesPage> {
                         onPressed: _addCategory,
                         child: Text('Simpan'),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.deepOrangeAccent,
-                          onPrimary: Colors.white,
+                          backgroundColor: Colors.deepOrangeAccent,
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.0,
                             vertical: 12.0,

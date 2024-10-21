@@ -457,8 +457,8 @@ class _AddBookPageState extends State<AddBookPage> {
                       onPressed: _selectImage,
                       child: Text('Select Image'),
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.orangeAccent,
-                        onPrimary: Colors.white,
+                        backgroundColor: Colors.orangeAccent,
+                        foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.0,
                           vertical: 8.0,
@@ -486,7 +486,7 @@ class _AddBookPageState extends State<AddBookPage> {
                                 },
                                 child: Text('Cancel'),
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.redAccent,
+                                  backgroundColor: Colors.redAccent,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
@@ -497,8 +497,8 @@ class _AddBookPageState extends State<AddBookPage> {
                                 onPressed: _addBook,
                                 child: Text('Simpan'),
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.deepOrangeAccent,
-                                  onPrimary: Colors.white,
+                                  backgroundColor: Colors.deepOrangeAccent,
+                                  foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 16.0,
                                     vertical: 8.0,

@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart'; // Hanya satu
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:belajar_flutter_perpus/models/BookModel.dart';
 import 'detail_book.dart';
@@ -119,12 +119,8 @@ class _BookPageState extends State<BookPage> {
 
   Future<void> _exportBooks() async {
     try {
-      // Minta izin penyimpanan
       final permissionStatus = await _requestPermission();
       bool isPermissionGranted = permissionStatus.isGranted;
-
-      // Periksa ketersediaan jaringan
-      // bool isNetworkAvailable = await checkNetworkAvailability();
 
       if (!isPermissionGranted) {
         log('Permission to access storage not granted.');
@@ -134,15 +130,6 @@ class _BookPageState extends State<BookPage> {
         return;
       }
 
-      // if (!isNetworkAvailable) {
-      //   log('Network is not available.');
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Network is not available.')),
-      //   );
-      //   return;
-      // }
-
-      // Dapatkan token
       final prefs = await SharedPreferences.getInstance();
       final String? token = prefs.getString('token');
 
@@ -154,7 +141,6 @@ class _BookPageState extends State<BookPage> {
         return;
       }
 
-      // Unduh file dari API
       final response = await Dio().get(
         'http://perpus-api.mamorasoft.com/api/book/export/excel',
         options: Options(
@@ -167,7 +153,7 @@ class _BookPageState extends State<BookPage> {
 
       if (response.statusCode == 200) {
         log('Data successfully downloaded from API.');
-        log('Response data size: ${response.data.toString()} bytes');
+        log('Response data size: ${response.data.length} bytes');
 
         final directory = await getExternalStorageDirectory();
         if (directory == null) {
@@ -212,47 +198,35 @@ class _BookPageState extends State<BookPage> {
     }
   }
 
-  // Future<bool> checkNetworkAvailability() async {
-  //   // Implementasikan logika untuk memeriksa ketersediaan jaringan
-  //   // Contoh sederhana dengan menggunakan plugin connectivity_plus
-  //   // final connectivityResult = await Connectivity().checkConnectivity();
-  //   // return connectivityResult != connectivityResult.none;
-  // }
-
   Future<PermissionStatus> _requestPermission() async {
     if (Platform.isAndroid) {
       var status = await Permission.storage.status;
 
       if (status.isDenied) {
-        // Jika izin belum diberikan, mintalah izin
         final result = await Permission.storage.request();
         if (result.isDenied) {
-          // Jika pengguna menolak izin, tampilkan snackbar atau penanganan lainnya
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content: Text('Permission to access storage is required.')),
           );
         }
-        return result; // Kembalikan status izin yang terbaru
+        return result;
       } else if (status.isPermanentlyDenied) {
-        // Jika izin secara permanen ditolak, beri tahu pengguna untuk mengubah pengaturan secara manual
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
                 'Permission to access storage is permanently denied. Please enable it in app settings.'),
           ),
         );
-        // Anda bisa membuka pengaturan aplikasi untuk meminta pengguna mengubah izin
         await openAppSettings();
       }
-      return status; // Kembalikan status izin yang sudah ada
+      return status;
     }
-    return PermissionStatus.granted; // Untuk platform selain Android
+    return PermissionStatus.granted;
   }
 
   Future<void> _exportPDF() async {
     try {
-      // Ambil token dari SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final String? token = prefs.getString('token');
 
@@ -260,7 +234,6 @@ class _BookPageState extends State<BookPage> {
         throw Exception('Token not found');
       }
 
-      // Unduh file PDF dari API
       final response = await Dio().get(
         'http://perpus-api.mamorasoft.com/api/book/export/pdf',
         options: Options(
@@ -275,7 +248,6 @@ class _BookPageState extends State<BookPage> {
       log('Response data length: ${response.data.length} bytes');
 
       if (response.statusCode == 200) {
-        // Dapatkan direktori penyimpanan eksternal
         final directory = await getExternalStorageDirectory();
         if (directory == null) {
           log('Failed to get external storage directory.');
@@ -285,14 +257,12 @@ class _BookPageState extends State<BookPage> {
           return;
         }
 
-        // Simpan file PDF di direktori yang sama dengan Excel
         final filePath = '${directory.path}/buku_export.pdf';
         final file = File(filePath);
         await file.writeAsBytes(response.data);
 
         if (await file.exists()) {
           log('File saved at: $filePath');
-          // Buka file PDF
           OpenFile.open(filePath);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Books PDF exported successfully!')),
@@ -347,30 +317,24 @@ class _BookPageState extends State<BookPage> {
               'Authorization': 'Bearer $token',
             },
             validateStatus: (status) {
-              return status! < 500; // Tangani semua status di bawah 500
+              return status! < 500;
             },
           ),
         );
 
-        // Cek apakah status respons adalah 200 (sukses)
         if (response.statusCode == 200) {
           log('Books imported successfully: ${response.data}');
 
-          // Tampilkan Snackbar untuk notifikasi sukses
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Books imported successfully!')));
 
-          // Tampilkan buku yang diimpor jika ada dalam data respons
           final importedBooks = response.data;
           log('Imported Books: $importedBooks');
 
-          // Refresh data buku setelah impor sukses
           _refreshBooks();
         } else {
-          // Jika status kode bukan 200, tampilkan pesan error
           log('Failed to import books. Status code: ${response.statusCode}');
 
-          // Tampilkan Snackbar untuk notifikasi gagal
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(
                   'Failed to import books. Status: ${response.statusCode}')));
@@ -378,14 +342,12 @@ class _BookPageState extends State<BookPage> {
       } else {
         log('No file selected.');
 
-        // Tampilkan Snackbar jika tidak ada file yang dipilih
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('No file selected.')));
       }
     } catch (e) {
       log('Error importing books: $e');
 
-      // Tampilkan Snackbar untuk notifikasi error
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error importing books: $e')));
     }
@@ -465,14 +427,12 @@ class _BookPageState extends State<BookPage> {
                           onPressed: _exportBooks,
                           child: Text('Export Excel'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors
-                                .orangeAccent, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            backgroundColor: Colors.orangeAccent,
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10), // Padding tombol
+                                horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12.0), // Radius 12.0
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
                         ),
@@ -481,14 +441,12 @@ class _BookPageState extends State<BookPage> {
                           onPressed: _exportPDF,
                           child: Text('Export PDF'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors
-                                .orangeAccent, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            backgroundColor: Colors.orangeAccent,
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10), // Padding tombol
+                                horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12.0), // Radius 12.0
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
                         ),
@@ -497,14 +455,12 @@ class _BookPageState extends State<BookPage> {
                           onPressed: _importBooks,
                           child: Text('Import Excel'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors
-                                .orangeAccent, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            backgroundColor: Colors.orangeAccent,
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10), // Padding tombol
+                                horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12.0), // Radius 12.0
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
                         ),
@@ -575,12 +531,10 @@ class _BookPageState extends State<BookPage> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .end, // Untuk memastikan tombol berada di sebelah kiri
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            // Navigasi ke halaman listbook.dart
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -590,23 +544,19 @@ class _BookPageState extends State<BookPage> {
                           },
                           child: Text(
                             'More',
-                            style: TextStyle(
-                                fontSize: 14.0), // Ukuran font yang lebih kecil
+                            style: TextStyle(fontSize: 14.0),
                           ),
                           style: ElevatedButton.styleFrom(
-                            primary:
-                                Colors.deepOrangeAccent[200], // Background grey
-                            onPrimary: Colors.white, // Teks orangeAccent
+                            backgroundColor: Colors.deepOrangeAccent[200],
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  12.0), // Sudut lebih kecil
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             padding: EdgeInsets.symmetric(
-                              vertical: 10.0, // Padding vertical lebih kecil
-                              horizontal:
-                                  12.0, // Padding horizontal lebih kecil
+                              vertical: 10.0,
+                              horizontal: 12.0,
                             ),
-                            minimumSize: Size(20, 16), // Ukuran minimum tombol
+                            minimumSize: Size(20, 16),
                           ),
                         ),
                       ],

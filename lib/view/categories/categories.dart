@@ -11,16 +11,15 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  List<Map<String, String>> allCategories = []; // Store all categories
-  List<Map<String, String>> displayedCategories =
-      []; // Categories to display on the current page
+  List<Map<String, String>> allCategories = [];
+  List<Map<String, String>> displayedCategories = [];
   String sUrl = "http://perpus-api.mamorasoft.com/api/";
   bool _isAscending = true;
   bool _isLoading = true;
-  int _currentPage = 1; // Current page for pagination
-  int _limit = 10; // Number of items per page
+  int _currentPage = 1;
+  int _limit = 10;
   TextEditingController _searchController = TextEditingController();
-  int _totalItems = 0; // Total items available
+  int _totalItems = 0;
 
   @override
   void initState() {
@@ -50,9 +49,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
       log('Full Response Data: ${response.data.toString()}');
 
       final List<dynamic> data = response.data['data']['categories'] ?? [];
-      _totalItems = data.length; // Update total items
+      _totalItems = data.length;
 
-      // Store all categories and set the initial displayed categories
       setState(() {
         allCategories = data
             .map((category) => {
@@ -60,14 +58,16 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   'name': category['nama_kategori'] as String,
                 })
             .toList();
-        _updateDisplayedCategories(); // Update displayed categories based on the current page
-        _isLoading = false; // Selesai loading
+        _updateDisplayedCategories();
+        _isLoading = false;
       });
     } catch (e) {
       log('Error fetching categories: $e');
-      setState(() {
-        _isLoading = false; // Selesai loading dengan error
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -86,22 +86,21 @@ class _CategoriesPageState extends State<CategoriesPage> {
       allCategories.sort((a, b) => _isAscending
           ? a['name']!.compareTo(b['name']!)
           : b['name']!.compareTo(a['name']!));
-      _updateDisplayedCategories(); // Update displayed categories after sorting
+      _updateDisplayedCategories();
     });
   }
 
   void _filterCategories() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      displayedCategories = allCategories.where((category) {
-        return category['name']!.toLowerCase().contains(query);
-      }).toList();
-      _updateDisplayedCategories(); // Update displayed categories after filtering
+      displayedCategories = allCategories
+          .where((category) => category['name']!.toLowerCase().contains(query))
+          .toList();
     });
   }
 
   Future<void> _refreshCategories() async {
-    await fetchCategories(); // Refresh categories
+    await fetchCategories();
   }
 
   void _nextPage() {
@@ -124,216 +123,149 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isPreviousButtonDisabled = _currentPage == 1;
-    bool isNextButtonDisabled = (_currentPage * _limit) >= _totalItems;
-
     return Scaffold(
-      body: _isLoading && allCategories.isEmpty
-          ? Center(child: CircularProgressIndicator())
+      appBar: AppBar(
+        title: Text('Kategori Buku',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+            ),
+          ),
+        ),
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(_isAscending ? Icons.sort : Icons.sort_by_alpha,
+                color: Colors.white),
+            onPressed: _toggleSortOrder,
+          ),
+          IconButton(
+            icon: Icon(Icons.add, color: Colors.white),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TambahCategoriesPage(
+                    onRefresh: _refreshCategories,
+                  ),
+                ),
+              );
+              if (result == true) {
+                _refreshCategories();
+              }
+            },
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF03346E)))
           : RefreshIndicator(
               onRefresh: _refreshCategories,
+              color: Color(0xFF03346E),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Kategori Buku',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TambahCategoriesPage(
-                                        onRefresh: _refreshCategories,
-                                      ),
-                                    ),
-                                  );
-                                  if (result == true) {
-                                    _refreshCategories(); // Refresh after adding a new category
-                                  }
-                                },
-                                child: Text('Tambah'),
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors
-                                      .orangeAccent, // Warna latar belakang tombol
-                                  onPrimary: Colors.white, // Warna teks tombol
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 10), // Padding tombol
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        12.0), // Radius 12.0
-                                  ),
-                                ),
-                              ),
-                              // Jika ingin menambahkan spasi atau elemen lain
-                              // SizedBox(width: 10),
-                            ],
-                          ),
-                        )
-                      ],
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Search categories',
-                                border: InputBorder.none,
-                                prefixIcon: Icon(Icons.search,
-                                    color: Colors.orangeAccent),
-                                contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 10.0),
-                              ),
-                            ),
-                          ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Cari kategori',
+                        prefixIcon:
+                            Icon(Icons.search, color: Color(0xFF03346E)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
                         ),
-                        IconButton(
-                          icon: Icon(
-                            _isAscending
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: Colors.orangeAccent,
-                          ),
-                          onPressed: _toggleSortOrder,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListView.builder(
-                        itemCount: displayedCategories.length,
-                        itemBuilder: (context, index) {
-                          final category = displayedCategories[index];
-                          return Card(
-                            elevation: 0,
-                            margin: EdgeInsets.symmetric(vertical: 6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 1,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 16.0),
-                                leading: Icon(
-                                  Icons.category_outlined,
-                                  color: Colors.orangeAccent,
-                                ),
-                                title: Text(
-                                  category['name']!,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                trailing: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.orangeAccent,
-                                ),
-                                onTap: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CategoryDetailPage(
-                                        category: category['name']!,
-                                        categoryId: category['id']!,
-                                        onRefresh: _refreshCategories,
-                                      ),
-                                    ),
-                                  );
-                                  if (result == true) {
-                                    _refreshCategories(); // Refresh after viewing category detail
-                                  }
-                                },
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: displayedCategories.length,
+                      separatorBuilder: (context, index) => Divider(
+                        color: Colors.grey[300],
+                        height: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final category = displayedCategories[index];
+                        return ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          leading: CircleAvatar(
+                            backgroundColor: Color(0xFF03346E),
+                            child: Text(
+                              category['name']![0].toUpperCase(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          title: Text(category['name']!,
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          trailing: Icon(Icons.arrow_forward_ios,
+                              color: Color(0xFF03346E)),
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CategoryDetailPage(
+                                  category: category['name']!,
+                                  categoryId: category['id']!,
+                                  onRefresh: _refreshCategories,
+                                ),
+                              ),
+                            );
+                            if (result == true) {
+                              _refreshCategories();
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                          onPressed:
-                              isPreviousButtonDisabled ? null : _previousPage,
-                          child: Text('Previous'),
+                          onPressed: _currentPage > 1 ? _previousPage : null,
+                          child: Text('Sebelumnya',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
-                            primary: isPreviousButtonDisabled
-                                ? Colors.grey
-                                : Colors.orangeAccent, // Background color
-                            onPrimary: Colors.white, // Text color
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
+                            backgroundColor: Color(0xFF03346E),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),
                         Text(
-                          'Page $_currentPage of ${(_totalItems / _limit).ceil()}',
-                          style: TextStyle(fontSize: 16),
+                          'Halaman $_currentPage dari ${(_totalItems / _limit).ceil()}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         ElevatedButton(
-                          onPressed: isNextButtonDisabled ? null : _nextPage,
-                          child: Text('Next'),
+                          onPressed: (_currentPage * _limit) < _totalItems
+                              ? _nextPage
+                              : null,
+                          child: Text('Selanjutnya',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
-                            primary: isNextButtonDisabled
-                                ? Colors.grey
-                                : Colors.orangeAccent, // Background color
-                            onPrimary: Colors.white, // Text color
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
+                            backgroundColor: Color(0xFF03346E),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                         ),

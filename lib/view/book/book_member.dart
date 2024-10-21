@@ -273,8 +273,8 @@ class _BookMemberPageState extends State<BookMemberPage> {
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.deepOrangeAccent[200],
-                            onPrimary: Colors.white,
+                            backgroundColor: Colors.deepOrangeAccent[200],
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.0),
                             ),

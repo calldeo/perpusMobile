@@ -183,9 +183,8 @@ class _ListBookPageState extends State<ListBookPage> {
                           },
                           child: Text('Tambah'),
                           style: ElevatedButton.styleFrom(
-                            primary: Colors
-                                .orangeAccent, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            backgroundColor: Colors.orangeAccent, // Warna latar belakang tombol
+                            foregroundColor: Colors.white, // Warna teks tombol
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10), // Padding tombol
                             shape: RoundedRectangleBorder(
@@ -313,10 +312,10 @@ class _ListBookPageState extends State<ListBookPage> {
                           onPressed: _currentPage > 1 ? _previousPage : null,
                           child: Text('Previous'),
                           style: ElevatedButton.styleFrom(
-                            primary: _currentPage > 1
+                            backgroundColor: _currentPage > 1
                                 ? Colors.orangeAccent
                                 : Colors.grey, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            foregroundColor: Colors.white, // Warna teks tombol
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             shape: RoundedRectangleBorder(
@@ -331,10 +330,10 @@ class _ListBookPageState extends State<ListBookPage> {
                               _currentPage < _totalPages ? _nextPage : null,
                           child: Text('Next'),
                           style: ElevatedButton.styleFrom(
-                            primary: _currentPage < _totalPages
+                            backgroundColor: _currentPage < _totalPages
                                 ? Colors.orangeAccent
                                 : Colors.grey, // Warna latar belakang tombol
-                            onPrimary: Colors.white, // Warna teks tombol
+                            foregroundColor: Colors.white, // Warna teks tombol
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             shape: RoundedRectangleBorder(

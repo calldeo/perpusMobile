@@ -237,8 +237,8 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                         },
                         child: Text('Save'),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.orangeAccent,
-                          onPrimary: Colors.white,
+                          backgroundColor: Colors.orangeAccent,
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.0,
                             vertical: 12.0,

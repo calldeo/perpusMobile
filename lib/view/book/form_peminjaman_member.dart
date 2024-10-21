@@ -174,7 +174,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
             children: [
               Text(
                 'Form Peminjaman Buku',
-                style: Theme.of(context).textTheme.headline6?.copyWith(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.black, // Ubah warna judul menjadi hitam
                     ),
@@ -195,7 +195,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                         Text(
                           'ID Buku',
                           style:
-                              Theme.of(context).textTheme.subtitle1?.copyWith(
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight
                                         .w500, // Berat font sedikit lebih ringan
                                     color: Colors.grey, // Warna teks abu-abu
@@ -240,7 +240,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                         Text(
                           'ID Member',
                           style:
-                              Theme.of(context).textTheme.subtitle1?.copyWith(
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight
                                         .w500, // Berat font sedikit lebih ringan
                                     color: Colors.grey, // Warna teks abu-abu
@@ -284,7 +284,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                         Text(
                           'Nama Peminjam',
                           style:
-                              Theme.of(context).textTheme.subtitle1?.copyWith(
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight
                                         .w500, // Berat font sedikit lebih ringan
                                     color: Colors.grey, // Warna teks abu-abu
@@ -330,7 +330,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                         Text(
                           'Tanggal Peminjaman',
                           style:
-                              Theme.of(context).textTheme.subtitle1?.copyWith(
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight
                                         .w500, // Berat font sedikit lebih ringan
                                     color: Colors.grey, // Warna teks abu-abu
@@ -373,7 +373,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                         Text(
                           'Tanggal Pengembalian',
                           style:
-                              Theme.of(context).textTheme.subtitle1?.copyWith(
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight
                                         .w500, // Berat font sedikit lebih ringan
                                     color: Colors.grey, // Warna teks abu-abu
@@ -422,7 +422,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.grey, // Warna tombol Cancel
+                                backgroundColor: Colors.grey, // Warna tombol Cancel
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                       12.0), // Radius tombol
@@ -434,8 +434,7 @@ class _FormPeminjamanMemberState extends State<FormPeminjamanMember> {
                             ElevatedButton(
                               onPressed: _submitPeminjaman,
                               style: ElevatedButton.styleFrom(
-                                primary:
-                                    Colors.orangeAccent, // Warna tombol Simpan
+                                backgroundColor: Colors.orangeAccent, // Warna tombol Simpan
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                       12.0), // Radius tombol

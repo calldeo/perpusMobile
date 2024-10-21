@@ -297,7 +297,7 @@ class _DetailPeminjamanMemberPageState
                                   onPressed: _approvePersetujuan,
                                   child: Text('Kembalikan Buku'),
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.green, // Warna tombol hijau
+                                    backgroundColor: Colors.green, // Warna tombol hijau
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),
@@ -317,8 +317,7 @@ class _DetailPeminjamanMemberPageState
                                   },
                                   child: Text('Kembali'),
                                   style: ElevatedButton.styleFrom(
-                                    primary:
-                                        Colors.grey, // Warna tombol abu-abu
+                                    backgroundColor: Colors.grey, // Warna tombol abu-abu
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12.0),
                                     ),

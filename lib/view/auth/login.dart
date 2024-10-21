@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final Dio _dio = Dio();
   bool _isLoading = false;
+  bool _obscureText = true;
 
   Future<void> _login() async {
     final String apiUrl = "http://perpus-api.mamorasoft.com/api/login";
@@ -47,7 +48,6 @@ class _LoginPageState extends State<LoginPage> {
       log(jsonResponse.toString());
 
       if (jsonResponse['status'] == 200) {
-        // Save token to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('userToken', jsonResponse['data']['token']);
 
@@ -62,44 +62,14 @@ class _LoginPageState extends State<LoginPage> {
           },
         );
       } else {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('Login Failed'),
-              content:
-                  Text(jsonResponse['message'] ?? 'Unknown error occurred'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        _showErrorDialog(
+            'Login Gagal',
+            jsonResponse['message'] ??
+                'Terjadi kesalahan yang tidak diketahui');
       }
     } catch (e) {
       log('Error: $e');
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('An error occurred, please try again later.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog('Error', 'Terjadi kesalahan, silakan coba lagi nanti.');
     } finally {
       setState(() {
         _isLoading = false;
@@ -107,175 +77,205 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(),
-              ),
-              (Route<dynamic> route) => false,
-            );
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            size: 20,
-            color: Colors.black,
-          ),
-        ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1000),
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1200),
-                      child: Text(
-                        "Masukkan Akun Anda",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        children: <Widget>[
-                          FadeInUp(
-                            duration: Duration(milliseconds: 1200),
-                            child: makeInput(
-                              label: "Username",
-                              controller: _usernameController,
-                            ),
-                          ),
-                          FadeInUp(
-                            duration: Duration(milliseconds: 1300),
-                            child: makeInput(
-                              label: "Password",
-                              obscureText: true,
-                              controller: _passwordController,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          FadeInUp(
-                            duration: Duration(milliseconds: 1400),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.only(top: 3, left: 3),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    border: Border.all(color: Colors.black),
-                                  ),
-                                  child: MaterialButton(
-                                    minWidth: 120,
-                                    height: 50,
-                                    onPressed: _login,
-                                    color: Colors.greenAccent,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    child: _isLoading
-                                        ? CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Colors.white),
-                                          )
-                                        : Text(
-                                            "Login",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          FadeInUp(
-                            duration: Duration(milliseconds: 1500),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text("Belum Punya Akun?"),
-                                SizedBox(width: 10),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/signup',
-                                    );
-                                  },
-                                  child: Text(
-                                    "Sign Up",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: TextStyle(color: Colors.blue[800])),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('OK', style: TextStyle(color: Colors.blue[800])),
           ),
         ],
       ),
     );
   }
 
-  Widget makeInput(
-      {required String label,
-      bool obscureText = false,
-      required TextEditingController controller}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue[300]!, Colors.blue[700]!],
           ),
         ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  FadeInDown(
+                    duration: Duration(milliseconds: 1000),
+                    child: Text(
+                      "Selamat Datang",
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10.0,
+                            color: Colors.black.withOpacity(0.3),
+                            offset: Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(height: 60),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1200),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(30),
+                        child: Column(
+                          children: [
+                            _buildTextField(
+                              controller: _usernameController,
+                              label: "Username",
+                              icon: Icons.person,
+                            ),
+                            SizedBox(height: 25),
+                            _buildTextField(
+                              controller: _passwordController,
+                              label: "Password",
+                              icon: Icons.lock,
+                              isPassword: true,
+                            ),
+                            SizedBox(height: 40),
+                            _buildLoginButton(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1500),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Belum punya akun? ",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(context, '/signup'),
+                          child: Text(
+                            "Daftar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: isPassword ? _obscureText : false,
+        style: TextStyle(fontSize: 16, color: Colors.blue[800]),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.blue[600]),
+          prefixIcon: Icon(icon, color: Colors.blue[600]),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.blue[600],
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return ElevatedButton(
+      onPressed: _isLoading ? null : _login,
+      child: _isLoading
+          ? CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
+          : Text(
+              "Masuk",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue[700],
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+        elevation: 8,
+        shadowColor: Colors.blue[300],
+        minimumSize: Size(double.infinity, 60),
       ),
     );
   }

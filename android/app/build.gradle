@@ -1,3 +1,8 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -21,17 +26,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
 android {
-    compileSdkVersion 33 // Pastikan ini sesuai dengan versi yang direkomendasikan oleh Flutter
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.example.belajar_flutter_perpus"
-        minSdkVersion 21  // Pastikan minSdkVersion sesuai dengan kebutuhan plugin
-        targetSdkVersion 33  // Pastikan ini sesuai dengan compileSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -57,6 +58,8 @@ android {
         }
     }
 }
+
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 flutter {
     source '../..'

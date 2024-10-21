@@ -221,7 +221,7 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
                               onPressed: _approvePersetujuan,
                               child: Text('Approve'),
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.deepOrangeAccent,
+                                backgroundColor: Colors.deepOrangeAccent,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),

@@ -197,7 +197,7 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
                               onPressed: _returnBook,
                               child: Text('Kembalikan Buku'),
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.deepOrangeAccent,
+                                backgroundColor: Colors.deepOrangeAccent,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),

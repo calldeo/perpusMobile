@@ -5,7 +5,6 @@ import 'package:belajar_flutter_perpus/view/bar/dashboard.dart';
 import 'package:belajar_flutter_perpus/view/auth/login.dart';
 import 'package:belajar_flutter_perpus/view/auth/sign_up.dart';
 import 'package:belajar_flutter_perpus/view/auth/splash_screen.dart';
-import 'package:belajar_flutter_perpus/view/member/member.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                 builder: (context) => Scaffold(
                   appBar: AppBar(title: Text('Error')),
-                  body: Center(child: Text('Invalid arguments provided.')),
+                  body: Center(child: Text('Argumen yang diberikan tidak valid.')),
                 ),
               );
             }
@@ -63,7 +62,7 @@ class MyApp extends StatelessWidget {
                   appBar: AppBar(title: Text('Error')),
                   body: Center(
                       child: Text(
-                          'Invalid arguments for FormMemberPeminjamanPage.')),
+                          'Argumen tidak valid untuk FormMemberPeminjamanPage.')),
                 ),
               );
             }
@@ -90,7 +89,7 @@ class MyApp extends StatelessWidget {
                 builder: (context) => Scaffold(
                   appBar: AppBar(title: Text('Error')),
                   body: Center(
-                      child: Text('Invalid arguments for ListMemberBookPage.')),
+                      child: Text('Argumen tidak valid untuk ListMemberBookPage.')),
                 ),
               );
             }
@@ -109,8 +108,8 @@ class MyApp extends StatelessWidget {
           default:
             return MaterialPageRoute(
               builder: (context) => Scaffold(
-                appBar: AppBar(title: Text('Not Found')),
-                body: Center(child: Text('Page not found')),
+                appBar: AppBar(title: Text('Tidak Ditemukan')),
+                body: Center(child: Text('Halaman tidak ditemukan')),
               ),
             );
         }
