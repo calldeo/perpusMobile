@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
+import 'package:intl/intl.dart';
 
 class DetailPersetujuanPage extends StatefulWidget {
   final Map<String, dynamic> peminjaman;
@@ -17,14 +18,14 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case '2': // Assuming '2' is the status code for approved
+      case '2':
         return Colors.blue;
-      case '1': // Assuming '1' is the status code for pending
+      case '1':
+        return Colors.orange;
+      case '3':
         return Colors.red;
-      case '3': // Assuming '3' is the status code for rejected
-        return Colors.green;
       default:
-        return Colors.transparent;
+        return Colors.grey;
     }
   }
 
@@ -38,6 +39,16 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
         return 'Ditolak';
       default:
         return 'Status Tidak Diketahui';
+    }
+  }
+
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('dd MMMM yyyy', 'id_ID').format(date);
+    } catch (e) {
+      return dateString;
     }
   }
 
@@ -56,7 +67,6 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
         throw Exception('Token is null');
       }
 
-      // Check if the status is 'pending' or '1'
       if (status == 'pending' || status == '1') {
         final response = await Dio().get(
           'http://perpus-api.mamorasoft.com/api/peminjaman/book/$peminjamanId/accept',
@@ -80,7 +90,7 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
               SnackBar(content: Text('Permintaan berhasil disetujui!')),
             );
             setState(() {
-              widget.peminjaman['status'] = newStatus; // Update status
+              widget.peminjaman['status'] = newStatus;
             });
             Navigator.pop(context, true);
           } else {
@@ -115,20 +125,24 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Color(0xFF03346E),
         title: Text('Detail Persetujuan Buku'),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator(color: Colors.white))
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Card(
-                    elevation: 5,
-                    margin: const EdgeInsets.all(16.0),
+                    elevation: 8,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -140,103 +154,116 @@ class _DetailPersetujuanPageState extends State<DetailPersetujuanPage> {
                           Text(
                             '${peminjaman['book']['judul'] ?? 'N/A'}',
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Penulis: ${peminjaman['book']['penulis'] ?? 'N/A'}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Penerbit Buku: ${peminjaman['book']['penerbit'] ?? 'N/A'}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF03346E),
                             ),
                           ),
                           SizedBox(height: 16),
+                          _buildInfoRow('Penulis',
+                              peminjaman['book']['penulis'] ?? 'N/A'),
+                          _buildInfoRow('Penerbit',
+                              peminjaman['book']['penerbit'] ?? 'N/A'),
+                          Divider(height: 32),
                           Text(
-                            'Member',
+                            'Informasi Peminjam',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF03346E),
                             ),
                           ),
-                          SizedBox(height: 6),
-                          Text(
-                            'Nama: ${peminjaman['member']['name'] ?? 'N/A'}',
-                            style: TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Tanggal Peminjaman: ${peminjaman['tanggal_peminjaman'] ?? 'N/A'}',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Tanggal Pengembalian: ${peminjaman['tanggal_pengembalian'] ?? 'N/A'}',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Status',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          // Menampilkan status dengan styling khusus
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: statusColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: statusColor,
-                              ),
-                            ),
-                            child: Text(
-                              statusText,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: ElevatedButton(
-                              onPressed: _approvePersetujuan,
-                              child: Text('Approve'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepOrangeAccent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
+                          SizedBox(height: 8),
+                          _buildInfoRow(
+                              'Nama', peminjaman['member']['name'] ?? 'N/A'),
+                          _buildInfoRow('Tanggal Peminjaman',
+                              _formatDate(peminjaman['tanggal_peminjaman'])),
+                          _buildInfoRow('Tanggal Pengembalian',
+                              _formatDate(peminjaman['tanggal_pengembalian'])),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Status',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF03346E),
                                 ),
+                              ),
+                              Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: statusColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  statusText,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                          if (status == '1' || status == 'pending')
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: _approvePersetujuan,
+                                child: Text(
+                                  'Setujui Peminjaman',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF03346E),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 32, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
-              ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[600],
+              ),
             ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

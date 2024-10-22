@@ -103,144 +103,131 @@ class _PengembalianPageState extends State<PengembalianPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _refreshPeminjaman,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      'Data Pengembalian Buku',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator(color: Colors.white))
+            : RefreshIndicator(
+                onRefresh: _refreshPeminjaman,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Data Pengembalian Buku',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 18),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Search Pengembalian',
-                                border: InputBorder.none,
-                                prefixIcon: Icon(Icons.search,
-                                    color: Colors.orangeAccent),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                  vertical: 10.0,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Cari Pengembalian',
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(Icons.search,
+                                      color: Color(0xFF03346E)),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 14.0,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            _isAscending
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: Colors.orangeAccent,
+                          SizedBox(width: 16),
+                          IconButton(
+                            icon: Icon(
+                              _isAscending
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              color: Colors.white,
+                            ),
+                            onPressed: _toggleSortOrder,
                           ),
-                          onPressed: _toggleSortOrder,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    SizedBox(height: 16),
+                    Expanded(
                       child: ListView.builder(
+                        padding: EdgeInsets.all(16.0),
                         itemCount: filteredPeminjaman.length,
                         itemBuilder: (context, index) {
                           final peminjaman = filteredPeminjaman[index];
                           return Card(
-                            elevation: 0,
-                            margin: EdgeInsets.symmetric(vertical: 6),
+                            elevation: 4,
+                            margin: EdgeInsets.only(bottom: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.0),
                             ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 1,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.all(16.0),
+                              leading: Icon(Icons.book,
+                                  size: 40, color: Color(0xFF03346E)),
+                              title: Text(
+                                peminjaman['book']['judul'],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF03346E),
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Peminjam: ${peminjaman['member']['name']}',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    'Tanggal Kembali: ${peminjaman['tanggal_pengembalian']}',
+                                    style: TextStyle(fontSize: 14),
                                   ),
                                 ],
                               ),
-                              child: ListTile(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 16.0),
-                                leading: Icon(Icons.assignment_return_outlined,
-                                    size: 50, color: Colors.orangeAccent),
-                                title: Text(
-                                  peminjaman['book']['judul'],
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                              trailing: Icon(Icons.arrow_forward_ios,
+                                  color: Color(0xFF03346E)),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailPengembalianPage(
+                                      peminjaman: peminjaman,
+                                    ),
                                   ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Nama Member: ${peminjaman['member']['name']}',
-                                    ),
-                                    Text(
-                                        'Tanggal Pengembalian: ${peminjaman['tanggal_pengembalian']}'),
-                                  ],
-                                ),
-                                trailing: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.orangeAccent,
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetailPengembalianPage(
-                                        peminjaman: peminjaman,
-                                      ),
-                                    ),
-                                  );
-                                  // Handle item tap here if needed
-                                },
-                              ),
+                                );
+                              },
                             ),
                           );
                         },
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

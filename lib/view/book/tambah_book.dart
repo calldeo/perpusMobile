@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart'; // Import package intl
-import 'package:file_picker/file_picker.dart'; // Import file_picker
+import 'package:intl/intl.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:belajar_flutter_perpus/models/BookModel.dart';
 import 'package:belajar_flutter_perpus/models/CategoryModel.dart';
 
@@ -84,7 +84,7 @@ class _AddBookPageState extends State<AddBookPage> {
         _stockController.text.isEmpty ||
         _selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('All fields are required')),
+        SnackBar(content: Text('Semua field harus diisi')),
       );
       return;
     }
@@ -97,19 +97,25 @@ class _AddBookPageState extends State<AddBookPage> {
         throw Exception('Token is null');
       }
 
+      var formData = FormData.fromMap({
+        'judul': _titleController.text,
+        'category_id': _selectedCategory!.id,
+        'pengarang': _authorController.text,
+        'penerbit': _publisherController.text,
+        'tahun': DateFormat('yyyy').format(_selectedDate!),
+        'stok': int.parse(_stockController.text),
+      });
+
+      if (_filePath != null) {
+        formData.files.add(MapEntry(
+          'image_name',
+          await MultipartFile.fromFile(_filePath!, filename: 'book_image.jpg'),
+        ));
+      }
+
       final response = await Dio().post(
         '${apiUrl}book/create',
-        data: FormData.fromMap({
-          'judul': _titleController.text,
-          'category_id': _selectedCategory!.id,
-          'pengarang': _authorController.text,
-          'penerbit': _publisherController.text,
-          'tahun': DateFormat('yyyy').format(_selectedDate!),
-          'stok': int.parse(_stockController.text),
-          'path': _filePath != null
-              ? await MultipartFile.fromFile(_filePath!)
-              : null,
-        }),
+        data: formData,
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -121,26 +127,20 @@ class _AddBookPageState extends State<AddBookPage> {
       var jsonResponse = response.data;
       log(jsonResponse.toString());
 
-      if (jsonResponse['status'] == 200) {
+      if (jsonResponse['status'] == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Book added successfully')),
+          SnackBar(content: Text('Buku berhasil ditambahkan')),
         );
-        widget.onRefresh(); // Panggil fungsi refresh dari BookPage
-        Navigator.pop(context); // Kembali ke BookPage
+        widget.onRefresh();
+        Navigator.pop(context);
       } else {
-        var errorMessage = 'Failed to add book';
-        if (response.data is Map<String, dynamic> &&
-            response.data['message'] != null) {
-          errorMessage = response.data['message'].toString();
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        var errorMessage = jsonResponse['message'] ?? 'Gagal menambahkan buku';
+        throw Exception(errorMessage);
       }
     } catch (e) {
       log('Error adding book: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add book')),
+        SnackBar(content: Text('Gagal menambahkan buku: ${e.toString()}')),
       );
     }
   }
@@ -188,19 +188,17 @@ class _AddBookPageState extends State<AddBookPage> {
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 8.0), // Jarak antara teks dan form field
+          SizedBox(height: 8.0),
           TextField(
             controller: controller,
             decoration: InputDecoration(
-              hintText: 'Enter $label',
+              hintText: 'Masukkan $label',
               border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(8.0), // Ukuran radius dikurangi
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide.none,
               ),
               prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0), // Jarak antara ikon dan teks
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(icon, color: Colors.grey),
               ),
               filled: true,
@@ -227,20 +225,18 @@ class _AddBookPageState extends State<AddBookPage> {
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 8.0), // Jarak antara teks dan form field
+          SizedBox(height: 8.0),
           TextField(
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText: 'Enter $label',
+              hintText: 'Masukkan $label',
               border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(8.0), // Ukuran radius dikurangi
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide.none,
               ),
               prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0), // Jarak antara ikon dan teks
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(icon, color: Colors.grey),
               ),
               filled: true,
@@ -266,16 +262,15 @@ class _AddBookPageState extends State<AddBookPage> {
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 8.0), // Jarak antara teks dan tombol
+          SizedBox(height: 8.0),
           InkWell(
             onTap: () {
-              // Tampilkan modal dari bawah
               showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
                   return Container(
                     padding: EdgeInsets.all(16.0),
-                    height: 300, // Sesuaikan tinggi modal
+                    height: 300,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -300,24 +295,21 @@ class _AddBookPageState extends State<AddBookPage> {
                                       value: category,
                                       groupValue: _selectedCategory,
                                       onChanged: (CategoryModel? value) {
-                                        // Saat kategori dipilih, perbarui nilai dan tutup modal
                                         setState(() {
                                           _selectedCategory = value;
                                         });
                                         Navigator.pop(context);
                                       },
-                                      activeColor: Colors
-                                          .orange, // Warna oranye untuk radio button
+                                      activeColor: Color(0xFF03346E),
                                     ),
                                     onTap: () {
-                                      // Saat list tile ditekan, update kategori yang dipilih
                                       setState(() {
                                         _selectedCategory = category;
                                       });
                                       Navigator.pop(context);
                                     },
                                   ),
-                                  Divider(), // Divider di bawah setiap kategori
+                                  Divider(),
                                 ],
                               );
                             },
@@ -332,21 +324,19 @@ class _AddBookPageState extends State<AddBookPage> {
             child: InputDecorator(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Ukuran radius dikurangi
+                  borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
                 fillColor: Colors.grey[200],
               ),
-              // Tampilkan kategori terpilih atau placeholder jika belum ada yang dipilih
               child: Text(
                 _selectedCategory?.namaKategori ?? 'Pilih Kategori',
                 style: TextStyle(
                   fontSize: 16,
                   color: _selectedCategory != null
                       ? Colors.black87
-                      : Colors.black54, // Ubah warna jika belum dipilih
+                      : Colors.black54,
                 ),
               ),
             ),
@@ -370,14 +360,13 @@ class _AddBookPageState extends State<AddBookPage> {
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 8.0), // Jarak antara teks dan date picker
+          SizedBox(height: 8.0),
           InkWell(
             onTap: () => _selectDate(context),
             child: InputDecorator(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Ukuran radius dikurangi
+                  borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
@@ -390,7 +379,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     Expanded(
                       child: Text(
                         _selectedDate == null
-                            ? 'Select Date'
+                            ? 'Pilih Tanggal'
                             : DateFormat('yyyy').format(_selectedDate!),
                         style: TextStyle(color: Colors.black54),
                       ),
@@ -414,21 +403,21 @@ class _AddBookPageState extends State<AddBookPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Book',
+          'Tambah Buku',
           style: TextStyle(
-            color: Colors.orange,
+            color: Colors.white,
             fontSize: 20.0,
           ),
         ),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.orange),
+        backgroundColor: Color(0xFF03346E),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
             Text(
-              'Book Details',
+              'Detail Buku',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -452,12 +441,12 @@ class _AddBookPageState extends State<AddBookPage> {
                         _publisherController, 'Penerbit', Icons.business),
                     _buildDatePickerField(),
                     _buildNumberField(
-                        _stockController, 'Stock', Icons.countertops),
+                        _stockController, 'Stok', Icons.countertops),
                     ElevatedButton(
                       onPressed: _selectImage,
-                      child: Text('Select Image'),
+                      child: Text('Pilih Gambar'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orangeAccent,
+                        backgroundColor: Color(0xFF1E5AA8),
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
                           horizontal: 16.0,
@@ -473,9 +462,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     ),
                     Row(
                       children: [
-                        SizedBox(
-                            width:
-                                16.0), // Jarak antara tombol Select Image dan tombol lainnya
+                        SizedBox(width: 16.0),
                         Expanded(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -484,7 +471,7 @@ class _AddBookPageState extends State<AddBookPage> {
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                child: Text('Cancel'),
+                                child: Text('Batal'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.redAccent,
                                   shape: RoundedRectangleBorder(
@@ -497,7 +484,7 @@ class _AddBookPageState extends State<AddBookPage> {
                                 onPressed: _addBook,
                                 child: Text('Simpan'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.deepOrangeAccent,
+                                  backgroundColor: Color(0xFF03346E),
                                   foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 16.0,

@@ -97,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
           });
         },
         items: isAdmin ? itemsAdmin : itemsMember,
-        selectedItemColor: Colors.orange,
+        selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
@@ -139,7 +139,7 @@ class _TransaksiPageState extends State<TransaksiPage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.assignment_return), label: 'Pengembalian'),
         ],
-        selectedItemColor: Colors.orange,
+        selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,
       ),
     );
@@ -183,7 +183,7 @@ class _TransaksiMemberPageState extends State<TransaksiMemberPage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.assignment_return), label: 'Pengembalian'),
         ],
-        selectedItemColor: Colors.orange,
+        selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,
       ),
     );

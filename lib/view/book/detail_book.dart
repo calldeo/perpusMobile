@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'dart:io'; // Import File untuk menggunakan File
-import 'package:file_picker/file_picker.dart'; // Import file_picker
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
@@ -28,8 +28,8 @@ class _DetailBookPageState extends State<DetailBookPage> {
   late Future<void> _fetchDataFuture;
   DateTime? _selectedDate;
 
-  File? _selectedImage; // Variabel untuk menyimpan file gambar
-  String? _imageUrl; // Variabel untuk menyimpan URL gambar
+  File? _selectedImage;
+  String? _imageUrl;
 
   static const String baseUrl = 'http://perpus-api.mamorasoft.com/api';
   List<CategoryModel> _categories = [];
@@ -72,7 +72,6 @@ class _DetailBookPageState extends State<DetailBookPage> {
         throw Exception('Token is null');
       }
 
-      // Ambil data kategori
       final categoryResponse = await Dio().get(
         '$baseUrl/category/all/all',
         options: Options(
@@ -90,7 +89,6 @@ class _DetailBookPageState extends State<DetailBookPage> {
           .map((category) => CategoryModel.fromJson(category))
           .toList();
 
-      // Ambil detail buku berdasarkan bookId
       final bookResponse = await Dio().get(
         '$baseUrl/book/${widget.bookId}',
         options: Options(
@@ -112,21 +110,16 @@ class _DetailBookPageState extends State<DetailBookPage> {
         _tahunController.text = DateFormat('yyyy').format(_selectedDate!);
         _stokController.text = bookData['stok'].toString() ?? '';
 
-        // Cari dan atur kategori yang sesuai dengan kategori buku
         final categoryId = bookData['category_id'];
         _selectedCategory = _categories.firstWhere(
           (category) => category.id == categoryId,
           orElse: () => _categories.isNotEmpty
               ? _categories[0]
-              : CategoryModel(
-                  id: -1,
-                  namaKategori:
-                      'Default'), // Kategori default jika tidak ada yang cocok
+              : CategoryModel(id: -1, namaKategori: 'Default'),
         );
 
-        // Mengatur gambar jika ada
         _imageUrl = bookData['image_url'];
-        _selectedImage = null; // Kosongkan file image jika ada URL gambar
+        _selectedImage = null;
       });
     } catch (e) {
       log('Error fetching data: $e');
@@ -152,8 +145,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
         'tahun': int.tryParse(_tahunController.text),
         'stok': int.tryParse(_stokController.text),
         if (_selectedImage != null)
-          'image_name':
-              _selectedImage!.path.split('/').last, // Mengirim nama file
+          'image_name': _selectedImage!.path.split('/').last,
       });
 
       final response = await Dio().post(
@@ -297,182 +289,202 @@ class _DetailBookPageState extends State<DetailBookPage> {
         title: Text(
           'Detail Buku',
           style: TextStyle(
-            color: Colors.orange, // Warna teks menjadi oranye
+            color: Colors.white,
             fontSize: 20.0,
           ),
         ),
-        backgroundColor: Colors.white, // Background putih
-        iconTheme: IconThemeData(color: Colors.orange), // Warna ikon oranye
+        backgroundColor: Color(0xFF03346E),
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete), // Ikon trash
-            color: Colors.orange, // Warna ikon trash
-            onPressed: _deleteBook, // Fungsi untuk menghapus buku
+            icon: Icon(Icons.delete),
+            color: Colors.white,
+            onPressed: _deleteBook,
           ),
         ],
       ),
-      body: FutureBuilder<void>(
-        future: _fetchDataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: FutureBuilder<void>(
+          future: _fetchDataFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(color: Colors.white));
+            }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+            if (snapshot.hasError) {
+              return Center(
+                  child: Text('Error: ${snapshot.error}',
+                      style: TextStyle(color: Colors.white)));
+            }
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Detail Buku',
-                      style: TextStyle(
-                        fontSize: 18.0, // Mengubah ukuran teks
-                        fontWeight: FontWeight
-                            .bold, // Mengubah ketebalan teks menjadi bold
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Detail Buku',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Card(
-                      elevation: 4.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            _buildTextField(
-                              label: 'Judul',
-                              controller: _judulController,
-                              icon: Icons.book,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a title';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 8.0),
-                            _buildDropdownField(
-                              label: 'Category', // Label untuk dropdown
-                              value:
-                                  _selectedCategory, // Nilai kategori yang dipilih
-                              items:
-                                  _categories, // Daftar kategori yang akan ditampilkan
-                              onChanged: (CategoryModel? newValue) {
-                                setState(() {
-                                  _selectedCategory = newValue;
-                                });
-                              },
-                              icon: Icons
-                                  .category, // Ikon yang ditampilkan di sebelah kanan
-                            ),
-                            SizedBox(height: 8.0),
-                            _buildTextField(
-                              label: 'Pengarang',
-                              controller: _pengarangController,
-                              icon: Icons.person,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter an author';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 8.0),
-                            _buildTextField(
-                              label: 'Penerbit',
-                              controller: _penerbitController,
-                              icon: Icons.publish,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a publisher';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 8.0),
-                            _buildDateField(
-                              label: 'Tahun Terbit',
-                              controller: _tahunController,
-                              icon: Icons.calendar_today,
-                              onTap: _selectDate,
-                            ),
-                            SizedBox(height: 8.0),
-                            _buildTextField(
-                              label: 'Stok',
-                              controller: _stokController,
-                              icon: Icons.storage,
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter stock';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 16.0),
-                            _buildImageSection(),
-                            Row(
+                      Card(
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        color: Colors.white.withOpacity(0.9),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              _buildTextField(
+                                label: 'Judul',
+                                controller: _judulController,
+                                icon: Icons.book,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a title';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 8.0),
+                              _buildDropdownField(
+                                label: 'Category',
+                                value: _selectedCategory,
+                                items: _categories,
+                                onChanged: (CategoryModel? newValue) {
+                                  setState(() {
+                                    _selectedCategory = newValue;
+                                  });
+                                },
+                                icon: Icons.category,
+                              ),
+                              SizedBox(height: 8.0),
+                              _buildTextField(
+                                label: 'Pengarang',
+                                controller: _pengarangController,
+                                icon: Icons.person,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter an author';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 8.0),
+                              _buildTextField(
+                                label: 'Penerbit',
+                                controller: _penerbitController,
+                                icon: Icons.publish,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a publisher';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 8.0),
+                              _buildDateField(
+                                label: 'Tahun Terbit',
+                                controller: _tahunController,
+                                icon: Icons.calendar_today,
+                                onTap: _selectDate,
+                              ),
+                              SizedBox(height: 8.0),
+                              _buildTextField(
+                                label: 'Stok',
+                                controller: _stokController,
+                                icon: Icons.storage,
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter stock';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 16.0),
+                              _buildImageSection(),
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   ElevatedButton(
                                     onPressed: _selectImage,
-                                    child: Text('Select Image'),
+                                    child: Text(
+                                      'Select Image',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orangeAccent,
+                                      backgroundColor: Color(0xFF1E5AA8),
+                                      foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(8.0),
                                       ),
                                     ),
                                   ),
-                                ]),
-                            SizedBox(height: 16.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Cancel'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
+                                ],
+                              ),
+                              SizedBox(height: 16.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Cancel',
+                                        style: TextStyle(color: Colors.white)),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.redAccent,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(width: 10.0),
-                                ElevatedButton(
-                                  onPressed: _updateBook,
-                                  child: Text('Simpan'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.orangeAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
+                                  SizedBox(width: 10.0),
+                                  ElevatedButton(
+                                    onPressed: _updateBook,
+                                    child: Text('Simpan',
+                                        style: TextStyle(color: Colors.white)),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF03346E),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -494,6 +506,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
+              color: Color(0xFF03346E),
             ),
           ),
           SizedBox(height: 4.0),
@@ -505,10 +518,9 @@ class _DetailBookPageState extends State<DetailBookPage> {
             child: TextFormField(
               controller: controller,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.0,
-                    vertical: 16.0), // Sesuaikan padding vertikal
-                suffixIcon: Icon(icon), // Pindahkan ikon ke kanan
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+                suffixIcon: Icon(icon, color: Color(0xFF1E5AA8)),
                 border: InputBorder.none,
               ),
               validator: validator,
@@ -537,18 +549,18 @@ class _DetailBookPageState extends State<DetailBookPage> {
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
+              color: Color(0xFF03346E),
             ),
           ),
           SizedBox(height: 4.0),
           InkWell(
             onTap: () {
-              // Tampilkan modal dari bawah
               showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
                   return Container(
                     padding: EdgeInsets.all(16.0),
-                    height: 300, // Sesuaikan tinggi modal
+                    height: 300,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -557,6 +569,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF03346E),
                           ),
                         ),
                         SizedBox(height: 16.0),
@@ -573,20 +586,17 @@ class _DetailBookPageState extends State<DetailBookPage> {
                                       value: category,
                                       groupValue: value,
                                       onChanged: (CategoryModel? newValue) {
-                                        // Update nilai yang dipilih dan tutup modal
                                         onChanged(newValue);
                                         Navigator.pop(context);
                                       },
-                                      activeColor:
-                                          Colors.orange, // Warna radio button
+                                      activeColor: Color(0xFF1E5AA8),
                                     ),
                                     onTap: () {
-                                      // Jika list item diklik, update nilai terpilih
                                       onChanged(category);
                                       Navigator.pop(context);
                                     },
                                   ),
-                                  Divider(), // Divider di bawah setiap kategori
+                                  Divider(),
                                 ],
                               );
                             },
@@ -607,7 +617,6 @@ class _DetailBookPageState extends State<DetailBookPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Tampilkan nama kategori terpilih atau placeholder
                   Text(
                     value?.namaKategori ?? 'Pilih Kategori',
                     style: TextStyle(
@@ -617,10 +626,9 @@ class _DetailBookPageState extends State<DetailBookPage> {
                   ),
                   Row(
                     children: [
-                      Icon(icon, color: Colors.black54), // Ikon kategori
-                      SizedBox(width: 8.0), // Jarak antara ikon dan panah
-                      Icon(Icons.arrow_drop_down,
-                          color: Colors.black54), // Ikon panah dropdown
+                      Icon(icon, color: Color(0xFF1E5AA8)),
+                      SizedBox(width: 8.0),
+                      Icon(Icons.arrow_drop_down, color: Color(0xFF1E5AA8)),
                     ],
                   ),
                 ],
@@ -648,6 +656,7 @@ class _DetailBookPageState extends State<DetailBookPage> {
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
+              color: Color(0xFF03346E),
             ),
           ),
           SizedBox(height: 4.0),
@@ -662,10 +671,9 @@ class _DetailBookPageState extends State<DetailBookPage> {
                 child: TextFormField(
                   controller: controller,
                   decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 16.0), // Sesuaikan padding vertikal
-                    suffixIcon: Icon(icon), // Pindahkan ikon ke kanan
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+                    suffixIcon: Icon(icon, color: Color(0xFF1E5AA8)),
                     border: InputBorder.none,
                   ),
                   validator: (value) {
@@ -694,7 +702,8 @@ class _DetailBookPageState extends State<DetailBookPage> {
                     width: 100,
                     height: 100,
                   )
-                : Text('No image selected'))
+                : Text('No image selected',
+                    style: TextStyle(color: Color(0xFF03346E))))
             : Image.file(
                 _selectedImage!,
                 width: 100,

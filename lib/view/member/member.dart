@@ -136,162 +136,195 @@ class _MemberListPageState extends State<MemberListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Colors.indigo))
-          : RefreshIndicator(
-              onRefresh: _refreshMembers,
-              color: Colors.indigo,
-              child: CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    expandedHeight: 200.0,
-                    floating: false,
-                    pinned: true,
-                                      actions: [
-                      IconButton(
-                        icon: Icon(_isAscending
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward),
-                        onPressed: _toggleSortOrder,
-                      ),
-                    ],
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: TextField(
-                            controller: _searchController,
-                            decoration: InputDecoration(
-                              hintText: 'Cari Anggota',
-                              border: InputBorder.none,
-                              prefixIcon:
-                                  Icon(Icons.search, color: Colors.indigo),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator(color: Colors.white))
+            : RefreshIndicator(
+                onRefresh: _refreshMembers,
+                color: Colors.white,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      expandedHeight: 200.0,
+                      floating: false,
+                      pinned: true,
+                      backgroundColor: Colors.transparent,
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: Text('Daftar Anggota',
+                            style: TextStyle(color: Colors.white)),
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
                             ),
                           ),
                         ),
                       ),
+                      actions: [
+                        IconButton(
+                          icon: Icon(_isAscending
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward),
+                          onPressed: _toggleSortOrder,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final member = filteredMembers[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.all(16),
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.indigo,
-                                child: Text(
-                                  member['name'][0].toUpperCase(),
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              title: Text(
-                                member['name'] ?? 'Tidak Ada Nama',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.indigo[800],
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 4),
-                                  Text(
-                                    member['email'] ?? 'Tidak Ada Email',
-                                    style: TextStyle(color: Colors.indigo[600]),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'ID: ${member['id'] ?? 'N/A'}',
-                                    style: TextStyle(
-                                        color: Colors.grey[600], fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              trailing: Icon(Icons.arrow_forward_ios,
-                                  color: Colors.indigo),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailMemberPage(member: member),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      childCount: filteredMembers.length,
-                    ),
-                  ),
-                  if (totalPage > 1)
                     SliverToBoxAdapter(
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: currentPage > 1 ? _previousPage : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.indigo,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              icon: Icon(Icons.arrow_back),
-                              label: Text('Sebelumnya'),
-                            ),
-                            Text(
-                              'Halaman $currentPage dari $totalPage',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.indigo[800],
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: TextField(
+                              controller: _searchController,
+                              decoration: InputDecoration(
+                                hintText: 'Cari Anggota',
+                                border: InputBorder.none,
+                                prefixIcon: Icon(Icons.search,
+                                    color: Color(0xFF03346E)),
                               ),
                             ),
-                            ElevatedButton.icon(
-                              onPressed:
-                                  currentPage < totalPage ? _nextPage : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.indigo,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              icon: Icon(Icons.arrow_forward),
-                              label: Text('Selanjutnya'),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                ],
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final member = filteredMembers[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.all(16),
+                                leading: CircleAvatar(
+                                  backgroundColor: Color(0xFF03346E),
+                                  child: Text(
+                                    member['name'][0].toUpperCase(),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                title: Text(
+                                  member['name'] ?? 'Tidak Ada Nama',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF03346E),
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 4),
+                                    Text(
+                                      member['email'] ?? 'Tidak Ada Email',
+                                      style:
+                                          TextStyle(color: Color(0xFF1E5AA8)),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'ID: ${member['id'] ?? 'N/A'}',
+                                      style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios,
+                                    color: Color(0xFF03346E)),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailMemberPage(member: member),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        childCount: filteredMembers.length,
+                      ),
+                    ),
+                    if (totalPage > 1)
+                      SliverToBoxAdapter(
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed:
+                                    currentPage > 1 ? _previousPage : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF03346E),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
+                                ),
+                                icon: Icon(Icons.arrow_back, size: 16),
+                                label: Text('Sebelumnya',
+                                    style: TextStyle(fontSize: 12)),
+                              ),
+                              Text(
+                                'Halaman $currentPage dari $totalPage',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              ElevatedButton.icon(
+                                onPressed:
+                                    currentPage < totalPage ? _nextPage : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF03346E),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
+                                ),
+                                icon: Icon(Icons.arrow_forward, size: 16),
+                                label: Text('Selanjutnya',
+                                    style: TextStyle(fontSize: 12)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 

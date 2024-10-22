@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
+import 'package:intl/intl.dart';
 
 class DetailPeminjamanPage extends StatefulWidget {
   final Map<String, dynamic> peminjaman;
@@ -15,6 +16,16 @@ class DetailPeminjamanPage extends StatefulWidget {
 class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
   bool _isLoading = false;
 
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
   Future<void> _returnBook() async {
     setState(() {
       _isLoading = true;
@@ -23,8 +34,7 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? token = prefs.getString('token');
-      final int peminjamanId = widget.peminjaman['id'] ??
-          0; // ID peminjaman harus ada di data peminjaman
+      final int peminjamanId = widget.peminjaman['id'] ?? 0;
 
       if (token == null) {
         throw Exception('Token is null');
@@ -42,12 +52,10 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
       log('Return Book Response: ${response.data.toString()}');
 
       if (response.statusCode == 200) {
-        // Buku berhasil dikembalikan
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Buku berhasil dikembalikan!')),
         );
-        Navigator.pop(context,
-            true); // Kembali ke halaman sebelumnya dan beri tahu bahwa data perlu di-refresh
+        Navigator.pop(context, true);
       } else {
         throw Exception('Failed to return book');
       }
@@ -66,45 +74,46 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
   @override
   Widget build(BuildContext context) {
     final peminjaman = widget.peminjaman;
-
-    // Ambil status peminjaman
     final String status = peminjaman['status'] ?? 'N/A';
 
-    // Menentukan warna dan teks status berdasarkan nilai status
     Color statusColor;
     String statusText;
 
     switch (status) {
       case '1':
-        statusColor = Colors.redAccent;
+        statusColor = Colors.orange;
         statusText = 'Menunggu Persetujuan';
         break;
       case '2':
-        statusColor = Colors.cyan;
+        statusColor = Colors.blue;
         statusText = 'Dalam Peminjaman';
         break;
       default:
-        statusColor = Colors.transparent;
+        statusColor = Colors.grey;
         statusText = status;
         break;
     }
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Color(0xFF03346E),
         title: Text('Detail Peminjaman Buku'),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator(color: Colors.white))
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Card(
-                    elevation: 5,
-                    margin: const EdgeInsets.all(16.0),
+                    elevation: 8,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -116,93 +125,76 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
                           Text(
                             '${peminjaman['book']['judul'] ?? 'N/A'}',
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Penulis: ${peminjaman['book']['penulis'] ?? 'N/A'}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Penerbit Buku: ${peminjaman['book']['penerbit'] ?? 'N/A'}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF03346E),
                             ),
                           ),
                           SizedBox(height: 16),
+                          _buildInfoRow('Penulis',
+                              peminjaman['book']['penulis'] ?? 'N/A'),
+                          _buildInfoRow('Penerbit',
+                              peminjaman['book']['penerbit'] ?? 'N/A'),
+                          Divider(height: 32),
                           Text(
-                            'Member',
+                            'Informasi Peminjam',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF03346E),
                             ),
                           ),
-                          SizedBox(height: 6),
-                          Text(
-                            'Nama: ${peminjaman['member']['name'] ?? 'N/A'}',
-                            style: TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Tanggal Peminjaman: ${peminjaman['tanggal_peminjaman'] ?? 'N/A'}',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Tanggal Pengembalian: ${peminjaman['tanggal_pengembalian'] ?? 'N/A'}',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Status',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          // Menampilkan status dengan styling khusus
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: statusColor,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: statusColor,
+                          SizedBox(height: 8),
+                          _buildInfoRow(
+                              'Nama', peminjaman['member']['name'] ?? 'N/A'),
+                          _buildInfoRow('Tanggal Peminjaman',
+                              _formatDate(peminjaman['tanggal_peminjaman'])),
+                          _buildInfoRow('Tanggal Pengembalian',
+                              _formatDate(peminjaman['tanggal_pengembalian'])),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Status',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF03346E),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              statusText,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: statusColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  statusText,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.centerRight,
+                          SizedBox(height: 24),
+                          Center(
                             child: ElevatedButton(
                               onPressed: _returnBook,
-                              child: Text('Kembalikan Buku'),
+                              child: Text(
+                                'Kembalikan Buku',
+                                style: TextStyle(color: Colors.white),
+                              ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepOrangeAccent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
+                                backgroundColor: Color(0xFF03346E),
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
+                                    horizontal: 32, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                             ),
                           ),
@@ -211,8 +203,37 @@ class _DetailPeminjamanPageState extends State<DetailPeminjamanPage> {
                     ),
                   ),
                 ),
-              ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[600],
+              ),
             ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

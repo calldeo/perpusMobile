@@ -74,94 +74,96 @@ class _TambahCategoriesPageState extends State<TambahCategoriesPage> {
         title: Text(
           'Tambah Category',
           style: TextStyle(
-            color: Colors.orange, // Warna teks menjadi oranye
+            color: Colors.white,
             fontSize: 20.0,
           ),
         ),
-        backgroundColor: Colors.white, // Background putih
-        iconTheme: IconThemeData(color: Colors.orange), // Warna ikon oranye
+        backgroundColor: Color(0xFF03346E),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16), // Jarak antara AppBar dan Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize:
-                      MainAxisSize.min, // Mengatur ukuran Card mengikuti isinya
-                  children: [
-                    Text(
-                      'Category Name',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black, // Ubah warna teks menjadi hitam
-                      ),
-                    ),
-                    SizedBox(
-                        height: 16), // Mengatur jarak antara teks dan TextField
-                    TextField(
-                      controller: _categoryController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter category name',
-                        hintStyle: TextStyle(color: Colors.orangeAccent[300]),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                              12.0), // Radius untuk TextField
-                          borderSide:
-                              BorderSide.none, // Menghilangkan border default
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 16),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Category Name',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF03346E),
                         ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 12.0,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[
-                            200], // Warna abu-abu untuk background form field
-                        suffixIcon: Icon(Icons.category,
-                            color:
-                                Colors.orangeAccent), // Ikon di sebelah kanan
                       ),
-                    ),
-                    SizedBox(
-                        height:
-                            16), // Mengatur jarak antara TextField dan ElevatedButton
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: ElevatedButton(
-                        onPressed: _addCategory,
-                        child: Text('Simpan'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrangeAccent,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _categoryController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter category name',
+                          hintStyle: TextStyle(
+                              color: Color(0xFF1E5AA8).withOpacity(0.5)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
                             horizontal: 16.0,
                             vertical: 12.0,
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                12.0), // Radius untuk ElevatedButton
-                          ),
-                          textStyle: TextStyle(
-                            fontSize: 16,
+                          filled: true,
+                          fillColor: Color(0xFF1E5AA8).withOpacity(0.1),
+                          suffixIcon:
+                              Icon(Icons.category, color: Color(0xFF1E5AA8)),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: ElevatedButton(
+                          onPressed: _addCategory,
+                          child: Text('Simpan'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF03346E),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 12.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

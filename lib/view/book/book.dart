@@ -356,215 +356,228 @@ class _BookPageState extends State<BookPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _refreshBooks,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      'Daftar Buku',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator(color: Colors.white))
+            : RefreshIndicator(
+                onRefresh: _refreshBooks,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'Daftar Buku',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 18),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Search books',
-                                border: InputBorder.none,
-                                prefixIcon: Icon(Icons.search,
-                                    color: Colors.orangeAccent),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                  vertical: 10.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            _isAscending
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: Colors.orangeAccent,
-                          ),
-                          onPressed: _toggleSortOrder,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: _exportBooks,
-                          child: Text('Export Excel'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orangeAccent,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: _exportPDF,
-                          child: Text('Export PDF'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orangeAccent,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: _importBooks,
-                          child: Text('Import Excel'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orangeAccent,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListView.builder(
-                        itemCount: filteredBooks.length,
-                        itemBuilder: (context, index) {
-                          final book = filteredBooks[index];
-                          return Card(
-                            elevation: 0,
-                            margin: EdgeInsets.symmetric(vertical: 6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
+                    SizedBox(height: 18),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        children: [
+                          Expanded(
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(12.0),
+                                borderRadius: BorderRadius.circular(4.0),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
+                                    color: Colors.black.withOpacity(0.1),
                                     spreadRadius: 1,
                                     blurRadius: 4,
                                     offset: Offset(0, 2),
                                   ),
                                 ],
                               ),
-                              child: ListTile(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 16.0),
-                                leading: Icon(Icons.book_outlined,
-                                    size: 50, color: Colors.orangeAccent),
-                                title: Text(
-                                  book.judul,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Search books',
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(Icons.search,
+                                      color: Color(0xFF03346E)),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                    vertical: 10.0,
                                   ),
                                 ),
-                                subtitle: Text('Author: ${book.pengarang}'),
-                                trailing: Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.orangeAccent,
-                                ),
-                                onTap: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailBookPage(
-                                        bookId: book.id,
-                                        onRefresh: _loadBooks,
-                                      ),
-                                    ),
-                                  );
-                                },
                               ),
                             ),
-                          );
-                        },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              _isAscending
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              color: Colors.white,
+                            ),
+                            onPressed: _toggleSortOrder,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ListBookPage(),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: _exportBooks,
+                            child: Text('Export Excel'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF03346E),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: _exportPDF,
+                            child: Text('Export PDF'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF03346E),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: _importBooks,
+                            child: Text('Import Excel'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF03346E),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                          itemCount: filteredBooks.length,
+                          itemBuilder: (context, index) {
+                            final book = filteredBooks[index];
+                            return Card(
+                              elevation: 0,
+                              margin: EdgeInsets.symmetric(vertical: 6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 16.0),
+                                  leading: Icon(Icons.book_outlined,
+                                      size: 50, color: Color(0xFF03346E)),
+                                  title: Text(
+                                    book.judul,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF03346E),
+                                    ),
+                                  ),
+                                  subtitle: Text('Author: ${book.pengarang}',
+                                      style:
+                                          TextStyle(color: Color(0xFF1E5AA8))),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color(0xFF03346E),
+                                  ),
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailBookPage(
+                                          bookId: book.id,
+                                          onRefresh: _loadBooks,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             );
                           },
-                          child: Text(
-                            'More',
-                            style: TextStyle(fontSize: 14.0),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrangeAccent[200],
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 12.0,
-                            ),
-                            minimumSize: Size(20, 16),
-                          ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ListBookPage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'More',
+                              style: TextStyle(fontSize: 14.0),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF03346E),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10.0,
+                                horizontal: 12.0,
+                              ),
+                              minimumSize: Size(20, 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

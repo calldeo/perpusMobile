@@ -1,29 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DetailPengembalianPage extends StatelessWidget {
   final Map<String, dynamic> peminjaman;
 
   DetailPengembalianPage({required this.peminjaman});
 
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Ambil status pengembalian
     final String status = peminjaman['status'] ?? 'N/A';
+    final Color statusColor = status == '3' ? Colors.green : Colors.orange;
+    final String statusText =
+        status == '3' ? 'Telah Dikembalikan' : 'Belum Dikembalikan';
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Color(0xFF03346E),
         title: Text('Detail Pengembalian Buku'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Card(
-              elevation: 5,
-              margin: const EdgeInsets.all(16.0),
+              elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -35,86 +52,92 @@ class DetailPengembalianPage extends StatelessWidget {
                     Text(
                       '${peminjaman['book']['judul'] ?? 'N/A'}',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Penulis: ${peminjaman['book']['penulis'] ?? 'N/A'}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Penerbit Buku: ${peminjaman['book']['penerbit'] ?? 'N/A'}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF03346E),
                       ),
                     ),
                     SizedBox(height: 16),
+                    _buildInfoRow(
+                        'Penulis', peminjaman['book']['penulis'] ?? 'N/A'),
+                    _buildInfoRow(
+                        'Penerbit', peminjaman['book']['penerbit'] ?? 'N/A'),
+                    Divider(height: 32),
                     Text(
-                      'Member',
+                      'Informasi Peminjam',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF03346E),
                       ),
                     ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Nama: ${peminjaman['member']['name'] ?? 'N/A'}',
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Tanggal Peminjaman: ${peminjaman['tanggal_peminjaman'] ?? 'N/A'}',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Tanggal Pengembalian: ${peminjaman['tanggal_pengembalian'] ?? 'N/A'}',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Status',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    // Menampilkan status dengan styling khusus
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: status == '3'
-                            ? Colors.greenAccent[400]
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color:
-                              status == '3' ? Colors.greenAccent : Colors.grey,
+                    SizedBox(height: 8),
+                    _buildInfoRow(
+                        'Nama', peminjaman['member']['name'] ?? 'N/A'),
+                    _buildInfoRow('Tanggal Peminjaman',
+                        _formatDate(peminjaman['tanggal_peminjaman'])),
+                    _buildInfoRow('Tanggal Pengembalian',
+                        _formatDate(peminjaman['tanggal_pengembalian'])),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Status',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF03346E),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        status == '3' ? 'Telah Dikembalikan' : status,
-                        style: TextStyle(
-                          color: status == '3' ? Colors.white : Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: statusColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            statusText,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(height: 20),
                   ],
                 ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: Colors.black87,
               ),
             ),
           ),

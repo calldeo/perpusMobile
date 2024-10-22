@@ -143,18 +143,23 @@ class _ListBookPageState extends State<ListBookPage> {
         title: Text(
           'List Buku',
           style: TextStyle(
-            color: Colors.orange, // Warna teks menjadi oranye
+            color: Colors.white,
             fontSize: 20.0,
           ),
         ),
-        backgroundColor: Colors.white, // Background putih
-        iconTheme: IconThemeData(color: Colors.orange), // Warna ikon oranye
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh,
-                color: Colors.orange), // Properti color langsung di dalam Icon
-            onPressed:
-                _loadBooks, // Fungsi yang dipanggil saat tombol refresh ditekan
+            icon: Icon(Icons.refresh, color: Colors.white),
+            onPressed: _loadBooks,
           ),
         ],
       ),
@@ -168,8 +173,7 @@ class _ListBookPageState extends State<ListBookPage> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .end, // Menempatkan tombol di sebelah kanan
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
                           onPressed: () {
@@ -183,17 +187,16 @@ class _ListBookPageState extends State<ListBookPage> {
                           },
                           child: Text('Tambah'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orangeAccent, // Warna latar belakang tombol
-                            foregroundColor: Colors.white, // Warna teks tombol
+                            backgroundColor: Color(0xFF03346E),
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10), // Padding tombol
+                                horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  12.0), // Radius sudut tombol
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
                         ),
-                        SizedBox(width: 10), // Jarak antara tombol
+                        SizedBox(width: 10),
                       ],
                     ),
                   ),
@@ -221,7 +224,7 @@ class _ListBookPageState extends State<ListBookPage> {
                                 hintText: 'Search books',
                                 border: InputBorder.none,
                                 prefixIcon: Icon(Icons.search,
-                                    color: Colors.orangeAccent),
+                                    color: Color(0xFF03346E)),
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: 10.0,
                                   vertical: 10.0,
@@ -235,7 +238,7 @@ class _ListBookPageState extends State<ListBookPage> {
                             _isAscending
                                 ? Icons.arrow_upward
                                 : Icons.arrow_downward,
-                            color: Colors.orangeAccent,
+                            color: Color(0xFF03346E),
                           ),
                           onPressed: _toggleSortOrder,
                         ),
@@ -273,7 +276,7 @@ class _ListBookPageState extends State<ListBookPage> {
                               contentPadding:
                                   EdgeInsets.symmetric(horizontal: 16.0),
                               leading: Icon(Icons.book,
-                                  size: 50, color: Colors.orangeAccent),
+                                  size: 50, color: Color(0xFF03346E)),
                               title: Text(
                                 book.judul,
                                 style: TextStyle(
@@ -284,7 +287,7 @@ class _ListBookPageState extends State<ListBookPage> {
                               subtitle: Text('Author: ${book.pengarang}'),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,
-                                color: Colors.orangeAccent,
+                                color: Color(0xFF03346E),
                               ),
                               onTap: () async {
                                 await Navigator.push(
@@ -313,14 +316,13 @@ class _ListBookPageState extends State<ListBookPage> {
                           child: Text('Previous'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _currentPage > 1
-                                ? Colors.orangeAccent
-                                : Colors.grey, // Warna latar belakang tombol
-                            foregroundColor: Colors.white, // Warna teks tombol
+                                ? Color(0xFF03346E)
+                                : Colors.grey,
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12.0), // Radius 12.0
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
                         ),
@@ -331,14 +333,13 @@ class _ListBookPageState extends State<ListBookPage> {
                           child: Text('Next'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _currentPage < _totalPages
-                                ? Colors.orangeAccent
-                                : Colors.grey, // Warna latar belakang tombol
-                            foregroundColor: Colors.white, // Warna teks tombol
+                                ? Color(0xFF03346E)
+                                : Colors.grey,
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12.0), // Radius 12.0
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                           ),
                         ),

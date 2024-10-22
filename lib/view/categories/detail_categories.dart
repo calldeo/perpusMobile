@@ -73,7 +73,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           SnackBar(
             content: Text("Data kategori berhasil diubah"),
             duration: Duration(seconds: 2),
-            backgroundColor: Colors.orangeAccent,
+            backgroundColor: Color(0xFF1E5AA8),
           ),
         );
         widget.onRefresh();
@@ -106,7 +106,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           SnackBar(
             content: Text("Kategori berhasil dihapus"),
             duration: Duration(seconds: 2),
-            backgroundColor: Colors.orangeAccent,
+            backgroundColor: Color(0xFF1E5AA8),
           ),
         );
         widget.onRefresh();
@@ -148,7 +148,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
               },
             ),
           ],
-          backgroundColor: Colors.orangeAccent[50],
+          backgroundColor: Color(0xFF1E5AA8).withOpacity(0.1),
         );
       },
     );
@@ -161,11 +161,19 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
         title: Text(
           'Detail Category',
           style: TextStyle(
-            color: Colors.orange, // Warna teks menjadi oranye
+            color: Colors.white,
             fontSize: 20.0,
           ),
         ),
-        backgroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF03346E), Color(0xFF1E5AA8)],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -173,15 +181,15 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
               _showDelete();
             },
           ),
-        ], // Background putih
-        iconTheme: IconThemeData(color: Colors.orange), // Warna ikon oranye
+        ],
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16), // Jarak antara AppBar dan Card
+            SizedBox(height: 16),
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -191,44 +199,38 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize:
-                      MainAxisSize.min, // Mengatur ukuran Card mengikuti isinya
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Category Name',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black, // Ubah warna teks menjadi hitam
+                        color: Color(0xFF03346E),
                       ),
                     ),
-                    SizedBox(
-                        height: 16), // Mengatur jarak antara teks dan TextField
+                    SizedBox(height: 16),
                     TextField(
                       controller: _categoryController,
                       decoration: InputDecoration(
                         hintText: 'Enter category name',
-                        hintStyle: TextStyle(color: Colors.orangeAccent[300]),
+                        hintStyle: TextStyle(
+                            color: Color(0xFF1E5AA8).withOpacity(0.5)),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                              8.0), // Radius untuk TextField
-                          borderSide:
-                              BorderSide.none, // Menghilangkan border default
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
                         ),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 16.0,
                           vertical: 12.0,
                         ),
                         filled: true,
-                        fillColor: Colors.grey[
-                            200], // Warna abu-abu untuk background form field
-                        suffixIcon: Icon(Icons.category,
-                            color: Colors.grey), // Ikon di sebelah kanan
+                        fillColor: Color(0xFF1E5AA8).withOpacity(0.1),
+                        suffixIcon:
+                            Icon(Icons.category, color: Color(0xFF1E5AA8)),
                       ),
                     ),
-                    SizedBox(
-                        height:
-                            16), // Mengatur jarak antara TextField dan ElevatedButton
+                    SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
@@ -237,15 +239,14 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                         },
                         child: Text('Save'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orangeAccent,
+                          backgroundColor: Color(0xFF03346E),
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.0,
                             vertical: 12.0,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8.0), // Radius untuk ElevatedButton
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
                       ),
